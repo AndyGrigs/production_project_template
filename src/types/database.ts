@@ -86,6 +86,7 @@ export type Database = {
           id: string
           image_url: string | null
           images: string[]
+          is_archived: boolean
           is_available: boolean | null
           name: string
           slug: string
@@ -100,6 +101,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           images?: string[]
+          is_archived?: boolean
           is_available?: boolean | null
           name: string
           slug?: string | null
@@ -114,6 +116,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           images?: string[]
+          is_archived?: boolean
           is_available?: boolean | null
           name?: string
           slug?: string | null
@@ -300,6 +303,7 @@ export type Database = {
           deposit_paid: number
           end_date: string
           equipment_id: string
+          equipment_name: string | null
           id: string
           notes: string | null
           start_date: string
@@ -315,6 +319,7 @@ export type Database = {
           deposit_paid?: number
           end_date: string
           equipment_id: string
+          equipment_name?: string | null
           id?: string
           notes?: string | null
           start_date: string
@@ -330,6 +335,7 @@ export type Database = {
           deposit_paid?: number
           end_date?: string
           equipment_id?: string
+          equipment_name?: string | null
           id?: string
           notes?: string | null
           start_date?: string

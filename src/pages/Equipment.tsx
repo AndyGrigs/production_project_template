@@ -51,6 +51,7 @@ export default function EquipmentPage() {
       .from('equipment')
       .select('*')
       .eq('is_available', true)
+      .eq('is_archived', false)
       .order('name');
 
     if (selectedCategory) {

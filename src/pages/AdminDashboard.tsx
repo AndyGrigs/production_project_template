@@ -327,13 +327,65 @@ if (error) {
   };
 
   const handleDeleteEquipment = async (id: string) => {
+    // 1. Скільки оренд посилається на це обладнання
+    const { count, error: countError } = await supabase
+      .from("rentals")
+      .select("id", { count: "exact", head: true })
+      .eq("equipment_id", id);
+
+    if (countError) {
+      console.error("Error checking rentals:", countError);
+      alert("Не удалось проверить аренды: " + countError.message);
+      return;
+    }
+
+    // 2. Є оренди → видаляти не можна, пропонуємо архівацію
+    if (count && count > 0) {
+      const confirmArchive = window.confirm(
+        `Это оборудование используется в ${count} аренде(ах). ` +
+          `Полное удаление невозможно — история аренд будет потеряна.\n\n` +
+          `Скрыть оборудование из каталога вместо удаления?`,
+      );
+      if (!confirmArchive) return;
+
+      const { error } = await supabase
+        .from("equipment")
+        .update({ is_archived: true, is_available: false })
+        .eq("id", id);
+
+      if (error) {
+        console.error("Error archiving equipment:", error);
+        alert("Ошибка при архивации: " + error.message);
+        return;
+      }
+
+      setEquipment((prev) => prev.filter((eq) => eq.id !== id));
+      return;
+    }
+
+    // 3. Оренд немає → справжнє видалення
+    const confirmDelete = window.confirm(
+      "Удалить оборудование безвозвратно?",
+    );
+    if (!confirmDelete) return;
+
     const { error } = await supabase.from("equipment").delete().eq("id", id);
 
     if (error) {
-      console.error("Error deleting equipment:", error);
-    } else {
-      setEquipment(equipment.filter((eq) => eq.id !== id));
+      // 23503 = foreign_key_violation: RLS міг приховати від нас частину оренд
+      if (error.code === "23503") {
+        alert(
+          "Оборудование связано с другими записями и не может быть удалено. " +
+            "Используйте архивацию.",
+        );
+      } else {
+        console.error("Error deleting equipment:", error);
+        alert("Ошибка при удалении: " + error.message);
+      }
+      return;
     }
+
+    setEquipment((prev) => prev.filter((eq) => eq.id !== id));
   };
 
   if (!isAdmin) {

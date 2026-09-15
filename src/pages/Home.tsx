@@ -55,6 +55,7 @@ export default function Home() {
       .from("equipment")
       .select("*")
       .eq("is_available", true)
+      .eq("is_archived", false)
       .order("name")
       .limit(3)
       .then(({ data }) => { if (data) setEquipment(data); });
